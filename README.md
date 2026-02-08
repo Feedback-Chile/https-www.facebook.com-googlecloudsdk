@@ -32,6 +32,12 @@ python3 reconstruct.py --strip-prompts salida.txt
 python3 reconstruct.py --strip-prefix "Rep_Imilac#" salida.txt
 ```
 
+Para eliminar líneas completas que contienen el prompt y el comando:
+
+```bash
+python3 reconstruct.py --drop-prompt-lines salida.txt
+```
+
 Para eliminar líneas vacías después de la limpieza:
 
 ```bash

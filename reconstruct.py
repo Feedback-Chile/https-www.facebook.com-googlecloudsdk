@@ -16,6 +16,7 @@ class CleanOptions:
     strip_prompts: bool = False
     strip_prefixes: Sequence[str] = ()
     drop_empty: bool = False
+    drop_prompt_lines: bool = False
 
 
 def normalize_line(raw_line: str, options: CleanOptions) -> str:
@@ -32,6 +33,8 @@ def clean_fragment(fragment: str, options: CleanOptions) -> List[str]:
     lines = []
     for raw_line in fragment.splitlines():
         if raw_line.strip().startswith(MARKER_PREFIXES):
+            continue
+        if options.drop_prompt_lines and PROMPT_PATTERN.match(raw_line):
             continue
         normalized = normalize_line(raw_line, options)
         if options.drop_empty and not normalized:
@@ -110,6 +113,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Quitar prefijos de prompt comunes (por ejemplo switch#).",
     )
     parser.add_argument(
+        "--drop-prompt-lines",
+        action="store_true",
+        help="Eliminar líneas que contienen el prompt y el comando.",
+    )
+    parser.add_argument(
         "--strip-prefix",
         action="append",
         default=[],
@@ -131,6 +139,7 @@ def main() -> int:
         strip_prompts=args.strip_prompts,
         strip_prefixes=tuple(args.strip_prefix),
         drop_empty=args.drop_empty,
+        drop_prompt_lines=args.drop_prompt_lines,
     )
     reconstructed = reconstruct_code(
         fragments,
